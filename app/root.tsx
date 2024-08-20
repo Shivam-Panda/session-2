@@ -1,12 +1,30 @@
 import {
   Form,
+  Link,
   Links,
   Meta,
+  Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData
 } from "@remix-run/react";
+import type { LinksFunction } from "@remix-run/server-runtime";
+import appStyleHref from './app.css?url';
+import { getContacts } from "./data";
+import { json } from "@remix-run/node";
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: appStyleHref }
+]
+
+export const loader = async () => {
+  const contacts = await getContacts();
+  return json({ contacts });
+}
 
 export default function App() {
+  const { contacts } = useLoaderData<typeof loader>();
+
   return (
     <html lang="en">
       <head>
@@ -34,15 +52,34 @@ export default function App() {
             </Form>
           </div>
           <nav>
-            <ul>
-              <li>
-                <a href={`/contacts/1`}>Your Name</a>
-              </li>
-              <li>
-                <a href={`/contacts/2`}>Your Friend</a>
-              </li>
-            </ul>
+            {contacts.length ? (
+              <ul>
+                {contacts.map((contact: any) => (
+                  <li key={contact.id}>
+                    <Link to={`contacts/${contact.id}`}>
+                      {contact.first || contact.last ? (
+                        <>
+                          {contact.first} {contact.last}
+                        </>
+                      ) : (
+                        <i>No Name</i>
+                      )}{" "}
+                      {contact.favorite ? (
+                        <span>★</span>
+                      ) : null}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>
+                <i>No contacts</i>
+              </p>
+            )}
           </nav>
+        </div>
+        <div id="detail">
+          <Outlet />
         </div>
 
         <ScrollRestoration />
