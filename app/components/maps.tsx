@@ -3,19 +3,75 @@ import Map from 'react-map-gl';
 import { DeckGL } from '@deck.gl/react';
 import { HexagonLayer } from 'deck.gl';
 
+interface hospital {
+    rate: number;
+    geom: {
+        coordinates: [number, number];
+    };
+}
+
 export default function MAP() {
-    // Add 3 more Datasets
     const layers = [
         new HexagonLayer<any>({
             id: 'heatmap',
             data: 'https://data.cityofnewyork.us/resource/5rq2-4hqu.json?$limit=1000',
             elevationRange: [0, 3000],
             extruded: true,
-            getPosition: (d) => {
-                return [d.the_geom.coordinates[0], d.the_geom.coordinates[1]];
-            },
+            getPosition: (d) => d.the_geom.coordinates,
             elevationScale: 4,
             radius: 200,
+            pickable: true,
+        }),
+        new HexagonLayer<hospital>({
+            id: 'michigan',
+            data: 'https://external-api-city-project.vercel.app/mi',
+            elevationRange: [0, 3000],
+            extruded: true,
+            getPosition: (d) => {
+                return d.geom.coordinates;
+            },
+            getElevationValue: (d: any) => {
+                let sum = 0;
+                for (let i = 0; i < d.length; i++) {
+                    sum += d[i].rate;
+                }
+                return (sum / d.length) * 100;
+            },
+            elevationScale: 4,
+            radius: 2000,
+            pickable: true,
+        }),
+        new HexagonLayer({
+            id: 'HexagonLayer',
+            data: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/sf-bike-parking.json',
+            extruded: true,
+            getPosition: (d: any) => d.COORDINATES,
+            getColorWeight: (d: any) => d.SPACES,
+            getElevationWeight: (d: any) => d.SPACES,
+            elevationScale: 4,
+            radius: 200,
+            pickable: true,
+        }),
+        new HexagonLayer({
+            id: 'PA',
+            data: 'https://data.pa.gov/resource/wmgc-6qvd.json',
+            extruded: true,
+            getPosition: (d: any) => {
+                if (d.geocoded_column) {
+                    return d.geocoded_column.coordinates;
+                }
+                return null;
+            },
+            getElevationValue: (d: any) => {
+                let sum = 0;
+                for (let i = 0; i < d.length; i++) {
+                    sum += parseInt(d[i].incident_count);
+                }
+                console.log(sum / d.length);
+                return (sum / d.length) * 1000;
+            },
+            elevationScale: 4,
+            radius: 500,
             pickable: true,
         }),
     ];
@@ -23,8 +79,8 @@ export default function MAP() {
     return (
         <DeckGL
             initialViewState={{
-                longitude: -122.4,
-                latitude: 37.8,
+                longitude: -84,
+                latitude: 44,
                 zoom: 4,
             }}
             layers={layers}
