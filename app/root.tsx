@@ -14,7 +14,7 @@ import {
 } from '@remix-run/react';
 import type { LinksFunction } from '@remix-run/server-runtime';
 import appStyleHref from './app.css?url';
-import { createEmptyContact, getContacts } from './data';
+import { getCityData } from './data';
 import { json, LoaderFunctionArgs } from '@remix-run/node';
 import { useEffect } from 'react';
 
@@ -22,20 +22,20 @@ export const links: LinksFunction = () => [
     { rel: 'stylesheet', href: appStyleHref },
 ];
 
-export const action = async () => {
-    const contact = await createEmptyContact();
-    return redirect(`/contacts/${contact.id}/edit`);
-};
+// export const action = async () => {
+//     const contact = await createEmptyContact();
+//     return redirect(`/contacts/${contact.id}/edit`);
+// };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
     const url = new URL(request.url);
     const q = url.searchParams.get('q');
-    const contacts = await getContacts();
-    return json({ contacts, q });
+    const cityData = await getCityData();
+    return json({ cityData, q });
 };
 
 export default function App() {
-    const { contacts, q } = useLoaderData<typeof loader>();
+    const { cityData, q } = useLoaderData<typeof loader>();
     const navigation = useNavigation();
     const submit = useSubmit();
     const searching =
@@ -100,10 +100,10 @@ export default function App() {
                         </Form>
                     </div>
                     <nav>
-                        {contacts.length ? (
+                        {cityData.length ? (
                             <ul>
-                                {contacts.map((contact: any) => (
-                                    <li key={contact.id}>
+                                {cityData.map((data: any) => (
+                                    <li key={data.id}>
                                         <NavLink
                                             className={({
                                                 isActive,
@@ -115,19 +115,9 @@ export default function App() {
                                                       ? 'pending'
                                                       : ''
                                             }
-                                            to={`contacts/${contact.id}`}
+                                            to={`data/${data.id}`}
                                         >
-                                            {contact.first || contact.last ? (
-                                                <>
-                                                    {contact.first}{' '}
-                                                    {contact.last}
-                                                </>
-                                            ) : (
-                                                <i>No Name</i>
-                                            )}{' '}
-                                            {contact.favorite ? (
-                                                <span>★</span>
-                                            ) : null}
+                                            <>{data.title}</>
                                         </NavLink>
                                     </li>
                                 ))}
