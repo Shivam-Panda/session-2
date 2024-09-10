@@ -17,9 +17,11 @@ import appStyleHref from './app.css?url';
 import { getCityData } from './data';
 import { json, LoaderFunctionArgs } from '@remix-run/node';
 import { useEffect } from 'react';
+import stylesheet from '~/tailwind.css?url';
 
 export const links: LinksFunction = () => [
     { rel: 'stylesheet', href: appStyleHref },
+    { rel: 'stylesheet', href: stylesheet },
 ];
 
 // export const action = async () => {
@@ -94,9 +96,6 @@ export default function App() {
                                 aria-hidden
                                 hidden={true}
                             />
-                        </Form>
-                        <Form method="post">
-                            <button type="submit">New</button>
                         </Form>
                     </div>
                     <nav>

@@ -2,6 +2,7 @@ import * as React from 'react';
 import Map from 'react-map-gl';
 import { DeckGL } from '@deck.gl/react';
 import { HexagonLayer } from 'deck.gl';
+import { useToast } from '~/hooks/use-toast';
 
 interface hospital {
     rate: number;
@@ -11,7 +12,7 @@ interface hospital {
 }
 
 const glConfig: Record<
-    'nyc' | 'sf' | 'mi' | 'pa',
+    string,
     {
         initialViewState: {
             longitude: number;
@@ -77,14 +78,13 @@ const glConfig: Record<
         initialViewState: {
             longitude: -77.2,
             latitude: 41.2,
-            zoom: 10,
+            zoom: 7,
         },
         getElevationValue: (d: any) => {
             let sum = 0;
             for (let i = 0; i < d.length; i++) {
                 sum += parseInt(d[i].incident_count);
             }
-            console.log(sum / d.length);
             return (sum / d.length) * 1000;
         },
     },
@@ -96,6 +96,8 @@ export default function MAP({
     // cityDataID: 'nyc' | 'mi' | 'sf' | 'pa';
     cityDataID: string;
 }) {
+    const { toast } = useToast();
+
     const selectedConfig = glConfig[cityDataID];
     const layers = [
         new HexagonLayer<any>({
@@ -107,61 +109,13 @@ export default function MAP({
             elevationScale: 4,
             radius: selectedConfig.radius,
             pickable: true,
-            // getElevationValue: selectedConfig.getElevationValue,
-            // getElevationWeight: selectedConfig.getElevationWeight,
+            onDataLoad: () => {
+                toast({
+                    title: 'Data Loaded',
+                    description: 'Data has finished loading',
+                });
+            },
         }),
-        // new HexagonLayer<hospital>({
-        //     id: 'michigan',
-        //     data: 'https://external-api-city-project.vercel.app/mi',
-        //     elevationRange: [0, 3000],
-        //     extruded: true,
-        //     getPosition: (d) => {
-        //         return d.geom.coordinates;
-        //     },
-        //     getElevationValue: (d: any) => {
-        //         let sum = 0;
-        //         for (let i = 0; i < d.length; i++) {
-        //             sum += d[i].rate;
-        //         }
-        //         return (sum / d.length) * 100;
-        //     },
-        //     elevationScale: 4,
-        //     radius: 2000,
-        //     pickable: true,
-        // }),
-        // new HexagonLayer({
-        //     id: 'HexagonLayer',
-        //     data: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/sf-bike-parking.json',
-        //     extruded: true,
-        //     getPosition: (d: any) => d.COORDINATES,
-        //     getColorWeight: (d: any) => d.SPACES,
-        //     getElevationWeight: (d: any) => d.SPACES,
-        //     elevationScale: 4,
-        //     radius: 200,
-        //     pickable: true,
-        // }),
-        // new HexagonLayer({
-        //     id: 'PA',
-        //     data: 'https://data.pa.gov/resource/wmgc-6qvd.json',
-        //     extruded: true,
-        //     getPosition: (d: any) => {
-        //         if (d.geocoded_column) {
-        //             return d.geocoded_column.coordinates;
-        //         }
-        //         return null;
-        //     },
-        //     getElevationValue: (d: any) => {
-        //         let sum = 0;
-        //         for (let i = 0; i < d.length; i++) {
-        //             sum += parseInt(d[i].incident_count);
-        //         }
-        //         console.log(sum / d.length);
-        //         return (sum / d.length) * 1000;
-        //     },
-        //     elevationScale: 4,
-        //     radius: 500,
-        //     pickable: true,
-        // }),
     ];
 
     return (
@@ -177,7 +131,7 @@ export default function MAP({
         >
             <Map
                 mapboxAccessToken="pk.eyJ1Ijoic29wYW5kYTI1IiwiYSI6ImNtMG12aXVlYjA2anEya29waGF0Z2drZGsifQ.ax4Zfd4tVFizHDA379gfZQ"
-                mapStyle="mapbox://styles/mapbox/streets-v9"
+                mapStyle="mapbox://styles/mapbox/dark-v9"
             />
         </DeckGL>
     );

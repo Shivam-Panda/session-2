@@ -26,9 +26,7 @@ export default function Contact() {
 
     return (
         <div id="contact">
-            <ClientOnly fallback={<p>Loading...</p>}>
-                {() => <MAP cityDataID={data[0].id} />}
-            </ClientOnly>
+            <MAP cityDataID={data[0].id} />
         </div>
     );
 }
