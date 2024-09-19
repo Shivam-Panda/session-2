@@ -2,7 +2,7 @@ import * as React from 'react';
 import Map from 'react-map-gl';
 import { DeckGL } from '@deck.gl/react';
 import { HexagonLayer } from 'deck.gl';
-import { useToast } from '~/hooks/use-toast';
+import { useToast } from '../hooks/use-toast';
 
 interface hospital {
     rate: number;
@@ -110,9 +110,10 @@ export default function MAP({
             radius: selectedConfig.radius,
             pickable: true,
             onDataLoad: () => {
+                console.log('Loaded');
                 toast({
-                    title: 'Data Loaded',
-                    description: 'Data has finished loading',
+                    title: 'Scheduled: Catch up ',
+                    description: 'Friday, February 10, 2023 at 5:57 PM',
                 });
             },
         }),
@@ -124,7 +125,7 @@ export default function MAP({
             layers={layers}
             style={{
                 width: '1000px',
-                height: '1000px',
+                height: '500px',
                 position: 'relative',
             }}
             controller={true}

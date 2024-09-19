@@ -1,9 +1,17 @@
-import { useFetcher, useLoaderData } from '@remix-run/react';
+import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { json, LoaderFunctionArgs } from '@remix-run/node';
 import { getCityData } from '../data';
 import invariant from 'tiny-invariant';
 import MAP from '../components/maps';
-import { ClientOnly } from 'remix-utils/client-only';
+// import { ClientOnly } from 'remix-utils/client-only';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '../components/ui/card';
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     invariant(params.dataId, 'Missing contactId param');
@@ -27,6 +35,14 @@ export default function Contact() {
     return (
         <div id="contact">
             <MAP cityDataID={data[0].id} />
+            <Card>
+                <CardHeader>
+                    <CardTitle>{data[0].title}</CardTitle>
+                    <CardDescription>
+                        Link <Link to={data[0].data}>for Data</Link>
+                    </CardDescription>
+                </CardHeader>
+            </Card>
         </div>
     );
 }

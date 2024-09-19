@@ -18,6 +18,8 @@ import { getCityData } from './data';
 import { json, LoaderFunctionArgs } from '@remix-run/node';
 import { useEffect } from 'react';
 import stylesheet from '~/tailwind.css?url';
+import { Button } from './components/ui/button';
+import { Input } from './components/ui/input';
 
 export const links: LinksFunction = () => [
     { rel: 'stylesheet', href: appStyleHref },
@@ -82,7 +84,7 @@ export default function App() {
                             id="search-form"
                             role="search"
                         >
-                            <input
+                            <Input
                                 id="q"
                                 aria-label="Search contacts"
                                 defaultValue={q || ''}
@@ -116,7 +118,7 @@ export default function App() {
                                             }
                                             to={`data/${data.id}`}
                                         >
-                                            <>{data.title}</>
+                                            <Button>{data.title}</Button>
                                         </NavLink>
                                     </li>
                                 ))}
